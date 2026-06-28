@@ -14,16 +14,18 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB
+// ==========================
+// DB CONNECTION
+// ==========================
 connectDB();
 
 // ==========================
-// 🔐 SECURITY MIDDLEWARE
+// SECURITY
 // ==========================
 app.use(helmet());
 
 // ==========================
-// 🌐 CORS FIX (FINAL VERSION)
+// 🔥 SIMPLE & RELIABLE CORS FIX
 // ==========================
 const allowedOrigins = [
   "http://localhost:5173",
@@ -33,15 +35,16 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow Postman / curl
+      // Allow Postman / server-to-server
       if (!origin) return callback(null, true);
 
-      const isAllowed =
-        allowedOrigins.some((allowedOrigin) =>
-          origin === allowedOrigin ||
-          origin.startsWith(allowedOrigin)
-        ) ||
-        origin.startsWith("http://localhost");
+      // Normalize origin (REMOVE trailing slash issue)
+      const normalizedOrigin = origin.replace(/\/$/, "");
+
+      const isAllowed = allowedOrigins.some((allowed) =>
+        normalizedOrigin === allowed ||
+        normalizedOrigin.startsWith(allowed)
+      );
 
       if (isAllowed) {
         return callback(null, true);
@@ -50,58 +53,57 @@ app.use(
       console.log("❌ Blocked by CORS:", origin);
       return callback(null, false);
     },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
 );
 
 // ==========================
-// 🧠 BODY PARSERS
+// BODY PARSER
 // ==========================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ==========================
-// 📝 LOGGING
+// LOGGING
 // ==========================
 if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
 // ==========================
-// 🚦 RATE LIMITING
+// RATE LIMITING
 // ==========================
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-app.use('/api', limiter);
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 300,
+  })
+);
 
 // ==========================
-// ❤️ HEALTH CHECK ROUTE
+// HEALTH CHECK
 // ==========================
 app.get('/api/health', (req, res) => {
-  res.status(200).json({
+  res.json({
     success: true,
     message: 'API is healthy',
   });
 });
 
 // ==========================
-// 📌 API ROUTES
+// ROUTES
 // ==========================
 app.use('/api/tasks', taskRoutes);
 
 // ==========================
-// ❌ ERROR HANDLERS
+// ERROR HANDLERS
 // ==========================
 app.use(notFound);
 app.use(errorHandler);
 
 // ==========================
-// 🚀 START SERVER
+// START SERVER
 // ==========================
 app.listen(PORT, () => {
   console.log(
@@ -110,7 +112,7 @@ app.listen(PORT, () => {
 });
 
 // ==========================
-// ⚠️ GRACEFUL SHUTDOWN
+// GLOBAL ERROR HANDLING
 // ==========================
 process.on('unhandledRejection', (err) => {
   console.error(`Unhandled Rejection: ${err.message}`);
