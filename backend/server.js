@@ -28,19 +28,22 @@ app.use(helmet());
 const allowedOrigins = [
   "http://localhost:5173",
   process.env.CLIENT_URL
-].filter(Boolean); // removes undefined values
+].filter(Boolean);
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow Postman / server-to-server requests
+      // Allow Postman / curl
       if (!origin) return callback(null, true);
 
-      // Allow localhost + deployed frontend
-      if (
-        allowedOrigins.includes(origin) ||
-        origin.startsWith("http://localhost")
-      ) {
+      const isAllowed =
+        allowedOrigins.some((allowedOrigin) =>
+          origin === allowedOrigin ||
+          origin.startsWith(allowedOrigin)
+        ) ||
+        origin.startsWith("http://localhost");
+
+      if (isAllowed) {
         return callback(null, true);
       }
 
