@@ -17,59 +17,98 @@ const PORT = process.env.PORT || 5000;
 // Connect to MongoDB
 connectDB();
 
-// Security headers
+// ==========================
+// 🔐 SECURITY MIDDLEWARE
+// ==========================
 app.use(helmet());
 
-// CORS — restrict to the configured client URL in production
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173').split(',');
+// ==========================
+// 🌐 CORS FIX (FINAL VERSION)
+// ==========================
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL
+].filter(Boolean); // removes undefined values
+
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
+    origin: function (origin, callback) {
+      // Allow Postman / server-to-server requests
+      if (!origin) return callback(null, true);
+
+      // Allow localhost + deployed frontend
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.startsWith("http://localhost")
+      ) {
+        return callback(null, true);
       }
+
+      console.log("❌ Blocked by CORS:", origin);
+      return callback(null, false);
     },
     credentials: true,
   })
 );
 
-// Body parser
+// ==========================
+// 🧠 BODY PARSERS
+// ==========================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Logging (dev only)
+// ==========================
+// 📝 LOGGING
+// ==========================
 if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
-// Basic rate limiting to prevent abuse
+// ==========================
+// 🚦 RATE LIMITING
+// ==========================
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 300,
   standardHeaders: true,
   legacyHeaders: false,
 });
+
 app.use('/api', limiter);
 
-// Health check
+// ==========================
+// ❤️ HEALTH CHECK ROUTE
+// ==========================
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ success: true, message: 'API is healthy' });
+  res.status(200).json({
+    success: true,
+    message: 'API is healthy',
+  });
 });
 
-// Routes
+// ==========================
+// 📌 API ROUTES
+// ==========================
 app.use('/api/tasks', taskRoutes);
 
-// 404 + centralized error handling
+// ==========================
+// ❌ ERROR HANDLERS
+// ==========================
 app.use(notFound);
 app.use(errorHandler);
 
+// ==========================
+// 🚀 START SERVER
+// ==========================
 app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  console.log(
+    `Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
+  );
 });
 
-// Graceful shutdown
+// ==========================
+// ⚠️ GRACEFUL SHUTDOWN
+// ==========================
 process.on('unhandledRejection', (err) => {
   console.error(`Unhandled Rejection: ${err.message}`);
   process.exit(1);

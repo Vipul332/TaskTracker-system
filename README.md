@@ -95,7 +95,7 @@ cp .env.example .env
 npm run dev
 ```
 
-The API will run on `http://localhost:5000`.
+The API will run on `http://tasktracker-system-7l7k.onrender.com/api`.
 
 ### 3. Frontend setup
 
@@ -126,7 +126,7 @@ The app will run on `http://localhost:5173`.
 
 | Variable | Description | Example |
 |---|---|---|
-| `VITE_API_URL` | Base URL of the backend API | `http://localhost:5000/api` |
+| `VITE_API_URL` | Base URL of the backend API | `http://tasktracker-system-7l7k.onrender.com/api/api` |
 
 ---
 
