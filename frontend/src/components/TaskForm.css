@@ -1,0 +1,73 @@
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.task-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.task-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.task-form label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.task-form input,
+.task-form textarea,
+.task-form select {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  transition: border-color var(--duration-fast) var(--ease-out);
+  width: 100%;
+}
+
+.task-form textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.task-form input:focus,
+.task-form textarea:focus,
+.task-form select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.task-form input[aria-invalid='true'],
+.task-form textarea[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.task-form__error {
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+}
+
+.task-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 480px) {
+  .task-form__row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,27 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 3px var(--space-2);
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.status-badge--pending {
+  background: var(--color-status-pending-bg);
+  color: var(--color-status-pending);
+}
+
+.status-badge--in-progress {
+  background: var(--color-status-progress-bg);
+  color: var(--color-status-progress);
+}
+
+.status-badge--completed {
+  background: var(--color-status-completed-bg);
+  color: var(--color-status-completed);
+}
