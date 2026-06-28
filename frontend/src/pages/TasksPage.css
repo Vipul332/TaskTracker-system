@@ -1,0 +1,48 @@
+.tasks-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-8);
+}
+
+.tasks-page__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.tasks-page__heading h1 {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-2);
+}
+
+.tasks-page__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.tasks-page__list {
+  background: var(--color-paper);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .tasks-page {
+    padding: var(--space-5) var(--space-4) var(--space-7);
+  }
+
+  .tasks-page__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tasks-page__header .btn {
+    width: 100%;
+  }
+}
